@@ -1,0 +1,143 @@
+<nav
+  class="navbar navbar-expand-lg border-bottom border-danger border-2 sticky-top"
+>
+  <div class="container-fluid">
+    <a class="navbar-brand" routerLink="/">
+      Chat Book</a
+    >
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarText"
+      aria-controls="navbarText"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+      <ul class="navbar-nav mb-2 mb-lg-0">
+        <li class="nav-item me-3">
+          <!-- <a class="nav-link" href="#">Profile</a> -->
+          <div class="dropdown">
+            <a
+              type="button"
+              class="dropdown-toggle"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              {{ userName }}
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" (click)="logout()">Log out</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="container">
+  <mat-tab-group (selectedTabChange)="onTabChanged($event)" class="m-5 p-5">
+    <mat-tab>
+      <ng-template mat-tab-label> Send Messages </ng-template>
+      <div class="border p-3 mt-3 border-2 border-light">
+        <form #messageForm="ngForm">
+          <div class="row mt-2" *ngIf="!this.isUIEncryption">
+            <div class="col-md-12 mt-2">
+              <label class="form-label">Select Receiver</label>
+              <select
+                class="form-select"
+                name="selectUser"
+                (change)="onSelect()"
+                required
+                #userRef="ngModel"
+                [(ngModel)]="selectedUser"
+                aria-label="Default select example"
+              >
+                <option [value]="user.id" *ngFor="let user of userList">
+                  {{ user.username }}
+                </option>
+              </select>
+              <ng-container
+                *ngIf="userRef.invalid && (userRef.dirty || userRef.touched)"
+              >
+                <div *ngIf="userRef.errors?.['required']" class="text-danger">
+                  Please select the receiver.
+                </div>
+              </ng-container>
+            </div>
+          </div>
+          <div class="row mt-4">
+            <div class="col-md-12">
+              <label for="exampleFormControlTextarea1" class="form-label"
+                >Message</label
+              >
+              <textarea
+                class="form-control"
+                placeholder="Type your message here"
+                name="_address"
+                [(ngModel)]="message"
+                id="floatingTextarea"
+                #reviewRef="ngModel"
+                rows="5"
+                required
+              ></textarea>
+              <ng-container
+                *ngIf="
+                  reviewRef.invalid && (reviewRef.dirty || reviewRef.touched)
+                "
+              >
+                <div *ngIf="reviewRef.errors?.['required']" class="text-danger">
+                  Please enter your message.
+                </div>
+              </ng-container>
+            </div>
+            <div class="col-md-12 mt-4 text-end">
+              <button
+                class="btn btn-outline-danger btn-lg"
+                type="button"
+                (click)="sendMessage(messageForm)"
+                [disabled]="!messageForm.valid"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label> View Messages </ng-template>
+      <ng-container
+        *ngIf="messageList && messageList.length > 0; else emptyTemplate"
+      >
+        <div
+          class="border p-3 mt-3 border-2 border-light"
+          *ngFor="let message of messageList"
+        >
+          <i class="fa-solid fa-user pe-2 fs-4"></i
+          ><span class="fs-6">{{ message.sender }}</span>
+          <div class="mt-2"></div>
+          <div class="mt-2">
+            {{ message.message }}
+          </div>
+          <div class="mt-2">
+            {{ message.date|date:'dd-MM-yyyy h:mm:ss a' }}
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #emptyTemplate>
+        <div
+          class="border p-3 mt-3 fs-3 text-dark border-2 border-light text-center"
+        >
+          No Messages
+        </div>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</div>
